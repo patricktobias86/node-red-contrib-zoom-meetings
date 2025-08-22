@@ -145,7 +145,19 @@ module.exports = function(RED) {
       };
 
       if (['post', 'patch', 'put'].includes(op.method)) {
-        request.data = msg.body || {};
+        let data;
+        if (node.sendRawBody) {
+          // Take the body as-is from msg.body
+          data = msg.body || {};
+        } else {
+          // Build a body from msg.params + msg.query, excluding any path params
+          const merged = Object.assign({}, msg.params || {}, msg.query || {});
+          const pathKeys = [];
+          op.path.replace(/:([a-zA-Z0-9_]+)/g, (_, k) => { pathKeys.push(k); return ''; });
+          pathKeys.forEach(k => { if (Object.prototype.hasOwnProperty.call(merged, k)) delete merged[k]; });
+          data = merged;
+        }
+        request.data = data;
       }
 
       node.status({ fill: 'blue', shape: 'dot', text: `${op.method.toUpperCase()} ${urlPath}` });

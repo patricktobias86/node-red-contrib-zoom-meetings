@@ -195,6 +195,21 @@
 })();
 </script>
 
+<script type="text/x-red" data-template-name="zoom-config">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Optional label">
+  </div>
+  <div class="form-row">
+    <label for="node-input-baseUrl"><i class="fa fa-chain"></i> Base URL</label>
+    <input type="text" id="node-input-baseUrl" placeholder="Base URL for Zoom API">
+  </div>
+  <div class="form-row">
+    <label for="node-input-apiToken"><i class="fa fa-key"></i> Zoom API Token</label>
+    <input type="password" id="node-input-apiToken" placeholder="Bearer token from Zoom OAuth">
+  </div>
+</script>
+
 <script type="text/x-red" data-template-name="zoom-meetings">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
