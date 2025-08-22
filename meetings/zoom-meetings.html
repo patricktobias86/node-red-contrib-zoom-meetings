@@ -1,0 +1,278 @@
+<script type="text/javascript">
+(function() {
+  const OPS = [
+    {m:"post", p:"/meetings/:meetingId/open_apps", l:"POST /meetings/{meetingId}/open_apps"},
+    {m:"post", p:"/meetings/:meetingId/registrants", l:"POST /meetings/{meetingId}/registrants"},
+    {m:"post", p:"/users/:userId/meetings", l:"POST /users/{userId}/meetings"},
+    {m:"post", p:"/meetings/:meetingId/polls", l:"POST /meetings/{meetingId}/polls"},
+    {m:"post", p:"/users/:userId/meeting_templates", l:"POST /users/{userId}/meeting_templates"},
+    {m:"post", p:"/meetings/:meetingId/invite_links", l:"POST /meetings/{meetingId}/invite_links"},
+
+    {m:"delete", p:"/live_meetings/:meetingId/chat/messages/:messageId", l:"DELETE /live_meetings/{meetingId}/chat/messages/{messageId}"},
+    {m:"delete", p:"/meetings/:meetingId", l:"DELETE /meetings/{meetingId}"},
+    {m:"delete", p:"/meetings/:meetingId/open_apps", l:"DELETE /meetings/{meetingId}/open_apps"},
+    {m:"delete", p:"/meetings/:meetingId/meeting_summary", l:"DELETE /meetings/{meetingId}/meeting_summary"},
+    {m:"delete", p:"/meetings/:meetingId/polls/:pollId", l:"DELETE /meetings/{meetingId}/polls/{pollId}"},
+    {m:"delete", p:"/meetings/:meetingId/registrants/:registrantId", l:"DELETE /meetings/{meetingId}/registrants/{registrantId}"},
+    {m:"delete", p:"/meetings/:meetingId/survey", l:"DELETE /meetings/{meetingId}/survey"},
+
+    {m:"get", p:"/meetings/:meetingId", l:"GET /meetings/{meetingId}"},
+    {m:"get", p:"/meetings/:meetingId/meeting_summary", l:"GET /meetings/{meetingId}/meeting_summary"},
+    {m:"get", p:"/meetings/:meetingId/polls/:pollId", l:"GET /meetings/{meetingId}/polls/{pollId}"},
+    {m:"get", p:"/meetings/:meetingId/registrants/:registrantId", l:"GET /meetings/{meetingId}/registrants/{registrantId}"},
+    {m:"post", p:"/meetings/:meetingId/sip_dialing", l:"POST /meetings/{meetingId}/sip_dialing"},
+    {m:"get", p:"/meetings/:meetingId/survey", l:"GET /meetings/{meetingId}/survey"},
+    {m:"get", p:"/meetings/:meetingId/jointoken/local_archiving", l:"GET /meetings/{meetingId}/jointoken/local_archiving"},
+    {m:"get", p:"/meetings/:meetingId/jointoken/live_streaming", l:"GET /meetings/{meetingId}/jointoken/live_streaming"},
+    {m:"get", p:"/meetings/:meetingId/jointoken/local_recording", l:"GET /meetings/{meetingId}/jointoken/local_recording"},
+    {m:"get", p:"/meetings/:meetingId/livestream", l:"GET /meetings/{meetingId}/livestream"},
+    {m:"get", p:"/meetings/:meetingId/invitation", l:"GET /meetings/{meetingId}/invitation"},
+    {m:"get", p:"/meetings/:meetingId/token", l:"GET /meetings/{meetingId}/token"},
+    {m:"get", p:"/past_meetings/:meetingId", l:"GET /past_meetings/{meetingId}"},
+    {m:"get", p:"/past_meetings/:meetingId/participants", l:"GET /past_meetings/{meetingId}/participants"},
+    {m:"get", p:"/meetings/meeting_summaries", l:"GET /meetings/meeting_summaries"},
+    {m:"get", p:"/meetings/:meetingId/polls", l:"GET /meetings/{meetingId}/polls"},
+    {m:"get", p:"/meetings/:meetingId/registrants", l:"GET /meetings/{meetingId}/registrants"},
+    {m:"get", p:"/users/:userId/meeting_templates", l:"GET /users/{userId}/meeting_templates"},
+    {m:"get", p:"/users/:userId/meetings", l:"GET /users/{userId}/meetings"},
+    {m:"get", p:"/past_meetings/:meetingId/instances", l:"GET /past_meetings/{meetingId}/instances"},
+    {m:"get", p:"/past_meetings/:meetingId/polls", l:"GET /past_meetings/{meetingId}/polls"},
+    {m:"get", p:"/past_meetings/:meetingId/qa", l:"GET /past_meetings/{meetingId}/qa"},
+    {m:"get", p:"/meetings/:meetingId/registrants/questions", l:"GET /meetings/{meetingId}/registrants/questions"},
+    {m:"get", p:"/users/:userId/upcoming_meetings", l:"GET /users/{userId}/upcoming_meetings"},
+    {m:"post", p:"/meetings/:meetingId/batch_polls", l:"POST /meetings/{meetingId}/batch_polls"},
+    {m:"post", p:"/meetings/:meetingId/batch_registrants", l:"POST /meetings/{meetingId}/batch_registrants"},
+    {m:"patch", p:"/live_meetings/:meetingId/chat/messages/:messageId", l:"PATCH /live_meetings/{meetingId}/chat/messages/{messageId}"},
+    {m:"patch", p:"/meetings/:meetingId/livestream", l:"PATCH /meetings/{meetingId}/livestream"},
+    {m:"patch", p:"/meetings/:meetingId", l:"PATCH /meetings/{meetingId}"},
+    {m:"put", p:"/meetings/:meetingId/polls/:pollId", l:"PUT /meetings/{meetingId}/polls/{pollId}"},
+    {m:"patch", p:"/meetings/:meetingId/survey", l:"PATCH /meetings/{meetingId}/survey"},
+    {m:"patch", p:"/meetings/:meetingId/livestream/status", l:"PATCH /meetings/{meetingId}/livestream/status"},
+    {m:"put", p:"/meetings/:meetingId/status", l:"PUT /meetings/{meetingId}/status"},
+    {m:"patch", p:"/live_meetings/:meetingId/rtms_app/status", l:"PATCH /live_meetings/{meetingId}/rtms_app/status"},
+    {m:"put", p:"/meetings/:meetingId/registrants/status", l:"PUT /meetings/{meetingId}/registrants/status"},
+    {m:"patch", p:"/meetings/:meetingId/registrants/questions", l:"PATCH /meetings/{meetingId}/registrants/questions"},
+    {m:"patch", p:"/live_meetings/:meetingId/events", l:"PATCH /live_meetings/{meetingId}/events"}
+  ];
+
+  RED.nodes.registerType('zoom-config', {
+    category: 'config',
+    defaults: { name: { value: '' }, baseUrl: { value: 'https://api.zoom.us/v2', required: true } },
+    credentials: { apiToken: { type: 'password' } },
+    label: function() { return this.name || 'Zoom API'; }
+  });
+
+  RED.nodes.registerType('zoom-meetings', {
+    category: 'function',
+    color: '#2d8cff',
+    defaults: {
+      name: { value: '' },
+      zoom: { type: 'zoom-config', required: true },
+      operation: { value: 'get /meetings/:meetingId' },
+      meetingId: { value: '' },
+      userId: { value: '' },
+      pollId: { value: '' },
+      registrantId: { value: '' },
+      messageId: { value: '' },
+      sendRawBody: { value: false }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'zoom.svg',
+    paletteLabel: 'Zoom Meetings',
+    label: function() { return this.name || 'Zoom Meetings'; },
+    oneditprepare: function() {
+      const $op = $("#node-input-operation");
+      $op.empty();
+      OPS.forEach(o => { $op.append($('<option/>').val(o.m + ' ' + o.p).text(o.l)); });
+
+      // Example request bodies per write operation
+      const EXAMPLE_BODIES = {
+        'post /users/:userId/meetings': JSON.stringify({
+          topic: 'Weekly Sync',
+          type: 2,
+          start_time: '2025-08-22T10:00:00Z',
+          duration: 30,
+          timezone: 'Europe/Stockholm',
+          agenda: 'Project updates',
+          settings: { host_video: true, participant_video: false, approval_type: 0 }
+        }, null, 2),
+        'post /meetings/:meetingId/registrants': JSON.stringify({
+          email: 'guest@example.com', first_name: 'Guest', last_name: 'User',
+          address: 'Main St 1', city: 'Stockholm', country: 'SE',
+          custom_questions: [{ title: 'Role', value: 'Developer' }]
+        }, null, 2),
+        'post /meetings/:meetingId/polls': JSON.stringify({
+          title: 'Kickoff Poll', status: 'notstart', anonymous: false,
+          questions: [{ name: 'Are you ready?', type: 'single', answers: ['Yes','No'] }]
+        }, null, 2),
+        'put /meetings/:meetingId/polls/:pollId': JSON.stringify({
+          title: 'Updated Poll Title', status: 'notstart',
+          questions: [{ name: 'New Q', type: 'single', answers: ['A','B','C'] }]
+        }, null, 2),
+        'post /meetings/:meetingId/open_apps': JSON.stringify({
+          app_id: 'your.app.id', mode: 'pre_open', data: { key: 'value' }
+        }, null, 2),
+        'post /meetings/:meetingId/invite_links': JSON.stringify({
+          ttl: 300, attendees: [{ email: 'teammate@example.com', name: 'Teammate' }]
+        }, null, 2),
+        'post /meetings/:meetingId/sip_dialing': JSON.stringify({
+          phone_numbers: ['+4681234567'], press_one: true
+        }, null, 2),
+        'patch /meetings/:meetingId': JSON.stringify({
+          topic: 'Renamed Meeting', agenda: 'New agenda', start_time: '2025-08-22T11:00:00Z',
+          settings: { waiting_room: true }
+        }, null, 2),
+        'put /meetings/:meetingId/status': JSON.stringify({ action: 'end' }, null, 2),
+        'put /meetings/:meetingId/registrants/status': JSON.stringify({
+          action: 'approve', registrants: [{ id: 'abc123' }]
+        }, null, 2),
+        'post /meetings/:meetingId/batch_polls': JSON.stringify({
+          polls: [{ title: 'Poll 1', questions: [{ name: 'Q1', type: 'single', answers: ['Y','N'] }] }]
+        }, null, 2),
+        'post /meetings/:meetingId/batch_registrants': JSON.stringify({
+          registrants: [
+            { email: 'one@example.com', first_name: 'One' },
+            { email: 'two@example.com', first_name: 'Two' }
+          ]
+        }, null, 2),
+        'patch /meetings/:meetingId/survey': JSON.stringify({
+          title: 'Post-Meeting Survey', anonymous: true,
+          questions: [{ name: 'Rate the meeting', type: 'single', answers: ['1','2','3','4','5'] }]
+        }, null, 2),
+        'patch /meetings/:meetingId/livestream': JSON.stringify({
+          page_url: 'https://example.com/live', stream_url: 'rtmp://live.example.com/app', stream_key: 'sk_123'
+        }, null, 2),
+        'patch /meetings/:meetingId/livestream/status': JSON.stringify({ action: 'start' }, null, 2),
+        'patch /live_meetings/:meetingId/chat/messages/:messageId': JSON.stringify({ action: 'redact' }, null, 2),
+        'patch /live_meetings/:meetingId/rtms_app/status': JSON.stringify({ status: 'active' }, null, 2),
+        'patch /live_meetings/:meetingId/events': JSON.stringify({ events: [{ type: 'mute_participant', participant_id: 'p1' }] }, null, 2)
+      };
+
+      function toggleParamRows() {
+        const sel = $op.val();
+        const needsMeetingId = /:\bmeetingId\b/.test(sel);
+        const needsUserId = /:\buserId\b/.test(sel);
+        const needsPollId = /:\bpollId\b/.test(sel);
+        const needsRegistrantId = /:\bregistrantId\b/.test(sel);
+        const needsMessageId = /:\bmessageId\b/.test(sel);
+
+        $('#row-meetingId').toggle(needsMeetingId);
+        $('#row-userId').toggle(needsUserId);
+        $('#row-pollId').toggle(needsPollId);
+        $('#row-registrantId').toggle(needsRegistrantId);
+        $('#row-messageId').toggle(needsMessageId);
+
+        const method = sel.split(' ')[0].toUpperCase();
+        const wantsBody = ['POST', 'PATCH', 'PUT'].includes(method);
+        $('#row-sendRawBody').toggle(wantsBody);
+        if (wantsBody) {
+          const key = sel.toLowerCase();
+          const example = EXAMPLE_BODIES[key] || '{\n  // Provide JSON in msg.body for this operation\n}';
+          $('#node-input-example-body').val(example);
+          $('#row-example-body').show();
+        } else {
+          $('#row-example-body').hide();
+        }
+      }
+
+      $('#node-input-operation').on('change', toggleParamRows);
+      toggleParamRows();
+
+      setTimeout(function(){
+        const btn = document.getElementById('btn-copy-example');
+        if (btn) {
+          btn.onclick = function(){
+            const ta = document.getElementById('node-input-example-body');
+            ta.select();
+            document.execCommand('copy');
+          };
+        }
+      }, 0);
+    },
+    oneditsave: function(){}
+  });
+})();
+</script>
+
+<script type="text/x-red" data-template-name="zoom-meetings">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Optional label">
+  </div>
+  <div class="form-row">
+    <label for="node-input-zoom"><i class="fa fa-cog"></i> Zoom Config</label>
+    <input type="text" id="node-input-zoom">
+  </div>
+  <div class="form-row">
+    <label for="node-input-operation"><i class="fa fa-exchange"></i> Operation</label>
+    <select id="node-input-operation" style="width: 100%"></select>
+  </div>
+
+  <div class="form-row" id="row-meetingId">
+    <label for="node-input-meetingId"><i class="fa fa-key"></i> meetingId</label>
+    <input type="text" id="node-input-meetingId" placeholder="e.g. 123456789">
+  </div>
+  <div class="form-row" id="row-userId">
+    <label for="node-input-userId"><i class="fa fa-user"></i> userId</label>
+    <input type="text" id="node-input-userId" placeholder="e.g. me or user UUID">
+  </div>
+  <div class="form-row" id="row-pollId">
+    <label for="node-input-pollId"><i class="fa fa-list"></i> pollId</label>
+    <input type="text" id="node-input-pollId" placeholder="Poll ID">
+  </div>
+  <div class="form-row" id="row-registrantId">
+    <label for="node-input-registrantId"><i class="fa fa-id-badge"></i> registrantId</label>
+    <input type="text" id="node-input-registrantId" placeholder="Registrant ID">
+  </div>
+  <div class="form-row" id="row-messageId">
+    <label for="node-input-messageId"><i class="fa fa-comment"></i> messageId</label>
+    <input type="text" id="node-input-messageId" placeholder="Message ID">
+  </div>
+
+  <div class="form-row" id="row-sendRawBody">
+    <label for="node-input-sendRawBody"><i class="fa fa-code"></i> Body from msg.body</label>
+    <input type="checkbox" id="node-input-sendRawBody" style="display:inline-block; width:auto; margin-left:6px;">
+    <span class="form-tips">If checked, the request body is taken from <code>msg.body</code>. Otherwise, use <code>msg.params</code>/<code>msg.query</code>.</span>
+  </div>
+  <div class="form-row" id="row-example-body" style="display:none">
+    <label><i class="fa fa-file-code-o"></i> Example JSON</label>
+    <textarea id="node-input-example-body" readonly style="width:100%; height:180px; font-family:monospace"></textarea>
+    <button id="btn-copy-example" class="red-ui-button" type="button" style="margin-top:6px">Copy to clipboard</button>
+    <span class="form-tips">Paste this into <code>msg.body</code> and edit as needed.</span>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="zoom-meetings">
+  <p><b>Zoom Meetings</b> — one node to call many Zoom Meetings API operations.</p>
+  <h3>Authentication</h3>
+  <ol>
+    <li>Add a <b>Zoom API</b> config node and paste your <code>API_TOKEN</code> (Bearer token) from Zoom OAuth or Server-to-Server OAuth.</li>
+    <li>Optionally change the Base URL (default: <code>https://api.zoom.us/v2</code>).</li>
+  </ol>
+  <h3>Using the node</h3>
+  <ul>
+    <li>Select an <b>Operation</b> from the dropdown.</li>
+    <li>Fill required path parameters that appear (e.g. <code>meetingId</code>, <code>userId</code>).</li>
+    <li>For POST/PATCH/PUT operations, an <b>Example JSON</b> body appears—copy it, paste into <code>msg.body</code>, and edit.</li>
+  </ul>
+  <h3>Inputs</h3>
+  <dl>
+    <dt>msg.params</dt><dd>Path/query overrides. Path params override UI fields. Query params are appended to the URL.</dd>
+    <dt>msg.query</dt><dd>Query-string parameters (e.g. pagination, filters).</dd>
+    <dt>msg.body</dt><dd>Request body for write operations.</dd>
+    <dt>msg.headers</dt><dd>Merges into request headers (e.g. to set <code>Content-Type</code>).</dd>
+  </dl>
+  <h3>Outputs</h3>
+  <dl>
+    <dt>msg.statusCode</dt><dd>HTTP status code.</dd>
+    <dt>msg.headers</dt><dd>Response headers.</dd>
+    <dt>msg.payload</dt><dd>Parsed JSON response (or raw text).</dd>
+    <dt>msg.request</dt><dd>{ method, url } of the call for debugging.</dd>
+  </dl>
+  <h3>Documentation</h3>
+  <p>Official Zoom docs:
+    <br><a href="https://developers.zoom.us/docs/api/meetings/" target="_blank">Meetings API overview</a>
+    <br><a href="https://developers.zoom.us/docs/api/rest/meeting/" target="_blank">REST Meeting reference</a>
+  </p>
+</script>

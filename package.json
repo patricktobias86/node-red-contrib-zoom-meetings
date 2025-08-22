@@ -1,0 +1,41 @@
+{
+  "name": "node-red-contrib-zoom-meetings",
+  "version": "0.0.1",
+  "description": "Custom Node-RED nodes for Zoom Meetings API.",
+  "license": "MIT",
+  "keywords": [
+    "node-red",
+    "zoom",
+    "meetings",
+    "api",
+    "no-code"
+  ],
+    "main": "nodes/config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patricktobias86/node-red-contrib-zoom-meetings.git"
+  },
+  "author": {
+    "name": "Patrick Tobias",
+    "url": "https://github.com/patricktobias86"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "bugs": {
+    "url": "https://github.com/patricktobias86/node-red-contrib-zoom-meetings/issues"
+  },
+  "homepage": "https://github.com/patricktobias86/node-red-contrib-zoom-meetings#readme",
+  "node-red": {
+    "nodes": {
+      "zoom-meetings": "meetings/zoom-meetings.js"
+    }
+  },
+  "dependencies": {
+    "axios": "^1.7.2"
+  },
+    "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}
