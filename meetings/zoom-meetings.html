@@ -1,58 +1,58 @@
 <script type="text/javascript">
 (function() {
   const OPS = [
-    {m:"post", p:"/meetings/:meetingId/open_apps", l:"POST /meetings/{meetingId}/open_apps"},
-    {m:"post", p:"/meetings/:meetingId/registrants", l:"POST /meetings/{meetingId}/registrants"},
-    {m:"post", p:"/users/:userId/meetings", l:"POST /users/{userId}/meetings"},
-    {m:"post", p:"/meetings/:meetingId/polls", l:"POST /meetings/{meetingId}/polls"},
-    {m:"post", p:"/users/:userId/meeting_templates", l:"POST /users/{userId}/meeting_templates"},
-    {m:"post", p:"/meetings/:meetingId/invite_links", l:"POST /meetings/{meetingId}/invite_links"},
+    {m:"post", p:"/meetings/:meetingId/open_apps", l:"Add a meeting app"},
+    {m:"post", p:"/meetings/:meetingId/registrants", l:"Add registrant"},
+    {m:"post", p:"/users/:userId/meetings", l:"Create meeting"},
+    {m:"post", p:"/meetings/:meetingId/polls", l:"Create poll"},
+    {m:"post", p:"/users/:userId/meeting_templates", l:"Create meeting template"},
+    {m:"post", p:"/meetings/:meetingId/invite_links", l:"Create invite link"},
 
-    {m:"delete", p:"/live_meetings/:meetingId/chat/messages/:messageId", l:"DELETE /live_meetings/{meetingId}/chat/messages/{messageId}"},
-    {m:"delete", p:"/meetings/:meetingId", l:"DELETE /meetings/{meetingId}"},
-    {m:"delete", p:"/meetings/:meetingId/open_apps", l:"DELETE /meetings/{meetingId}/open_apps"},
-    {m:"delete", p:"/meetings/:meetingId/meeting_summary", l:"DELETE /meetings/{meetingId}/meeting_summary"},
-    {m:"delete", p:"/meetings/:meetingId/polls/:pollId", l:"DELETE /meetings/{meetingId}/polls/{pollId}"},
-    {m:"delete", p:"/meetings/:meetingId/registrants/:registrantId", l:"DELETE /meetings/{meetingId}/registrants/{registrantId}"},
-    {m:"delete", p:"/meetings/:meetingId/survey", l:"DELETE /meetings/{meetingId}/survey"},
+    {m:"delete", p:"/live_meetings/:meetingId/chat/messages/:messageId", l:"Delete chat message"},
+    {m:"delete", p:"/meetings/:meetingId", l:"Delete meeting"},
+    {m:"delete", p:"/meetings/:meetingId/open_apps", l:"Remove meeting app"},
+    {m:"delete", p:"/meetings/:meetingId/meeting_summary", l:"Delete meeting summary"},
+    {m:"delete", p:"/meetings/:meetingId/polls/:pollId", l:"Delete poll"},
+    {m:"delete", p:"/meetings/:meetingId/registrants/:registrantId", l:"Remove registrant"},
+    {m:"delete", p:"/meetings/:meetingId/survey", l:"Delete survey"},
 
-    {m:"get", p:"/meetings/:meetingId", l:"GET /meetings/{meetingId}"},
-    {m:"get", p:"/meetings/:meetingId/meeting_summary", l:"GET /meetings/{meetingId}/meeting_summary"},
-    {m:"get", p:"/meetings/:meetingId/polls/:pollId", l:"GET /meetings/{meetingId}/polls/{pollId}"},
-    {m:"get", p:"/meetings/:meetingId/registrants/:registrantId", l:"GET /meetings/{meetingId}/registrants/{registrantId}"},
-    {m:"post", p:"/meetings/:meetingId/sip_dialing", l:"POST /meetings/{meetingId}/sip_dialing"},
-    {m:"get", p:"/meetings/:meetingId/survey", l:"GET /meetings/{meetingId}/survey"},
-    {m:"get", p:"/meetings/:meetingId/jointoken/local_archiving", l:"GET /meetings/{meetingId}/jointoken/local_archiving"},
-    {m:"get", p:"/meetings/:meetingId/jointoken/live_streaming", l:"GET /meetings/{meetingId}/jointoken/live_streaming"},
-    {m:"get", p:"/meetings/:meetingId/jointoken/local_recording", l:"GET /meetings/{meetingId}/jointoken/local_recording"},
-    {m:"get", p:"/meetings/:meetingId/livestream", l:"GET /meetings/{meetingId}/livestream"},
-    {m:"get", p:"/meetings/:meetingId/invitation", l:"GET /meetings/{meetingId}/invitation"},
-    {m:"get", p:"/meetings/:meetingId/token", l:"GET /meetings/{meetingId}/token"},
-    {m:"get", p:"/past_meetings/:meetingId", l:"GET /past_meetings/{meetingId}"},
-    {m:"get", p:"/past_meetings/:meetingId/participants", l:"GET /past_meetings/{meetingId}/participants"},
-    {m:"get", p:"/meetings/meeting_summaries", l:"GET /meetings/meeting_summaries"},
-    {m:"get", p:"/meetings/:meetingId/polls", l:"GET /meetings/{meetingId}/polls"},
-    {m:"get", p:"/meetings/:meetingId/registrants", l:"GET /meetings/{meetingId}/registrants"},
-    {m:"get", p:"/users/:userId/meeting_templates", l:"GET /users/{userId}/meeting_templates"},
-    {m:"get", p:"/users/:userId/meetings", l:"GET /users/{userId}/meetings"},
-    {m:"get", p:"/past_meetings/:meetingId/instances", l:"GET /past_meetings/{meetingId}/instances"},
-    {m:"get", p:"/past_meetings/:meetingId/polls", l:"GET /past_meetings/{meetingId}/polls"},
-    {m:"get", p:"/past_meetings/:meetingId/qa", l:"GET /past_meetings/{meetingId}/qa"},
-    {m:"get", p:"/meetings/:meetingId/registrants/questions", l:"GET /meetings/{meetingId}/registrants/questions"},
-    {m:"get", p:"/users/:userId/upcoming_meetings", l:"GET /users/{userId}/upcoming_meetings"},
-    {m:"post", p:"/meetings/:meetingId/batch_polls", l:"POST /meetings/{meetingId}/batch_polls"},
-    {m:"post", p:"/meetings/:meetingId/batch_registrants", l:"POST /meetings/{meetingId}/batch_registrants"},
-    {m:"patch", p:"/live_meetings/:meetingId/chat/messages/:messageId", l:"PATCH /live_meetings/{meetingId}/chat/messages/{messageId}"},
-    {m:"patch", p:"/meetings/:meetingId/livestream", l:"PATCH /meetings/{meetingId}/livestream"},
-    {m:"patch", p:"/meetings/:meetingId", l:"PATCH /meetings/{meetingId}"},
-    {m:"put", p:"/meetings/:meetingId/polls/:pollId", l:"PUT /meetings/{meetingId}/polls/{pollId}"},
-    {m:"patch", p:"/meetings/:meetingId/survey", l:"PATCH /meetings/{meetingId}/survey"},
-    {m:"patch", p:"/meetings/:meetingId/livestream/status", l:"PATCH /meetings/{meetingId}/livestream/status"},
-    {m:"put", p:"/meetings/:meetingId/status", l:"PUT /meetings/{meetingId}/status"},
-    {m:"patch", p:"/live_meetings/:meetingId/rtms_app/status", l:"PATCH /live_meetings/{meetingId}/rtms_app/status"},
-    {m:"put", p:"/meetings/:meetingId/registrants/status", l:"PUT /meetings/{meetingId}/registrants/status"},
-    {m:"patch", p:"/meetings/:meetingId/registrants/questions", l:"PATCH /meetings/{meetingId}/registrants/questions"},
-    {m:"patch", p:"/live_meetings/:meetingId/events", l:"PATCH /live_meetings/{meetingId}/events"}
+    {m:"get", p:"/meetings/:meetingId", l:"Get meeting"},
+    {m:"get", p:"/meetings/:meetingId/meeting_summary", l:"Get meeting summary"},
+    {m:"get", p:"/meetings/:meetingId/polls/:pollId", l:"Get poll"},
+    {m:"get", p:"/meetings/:meetingId/registrants/:registrantId", l:"Get registrant"},
+    {m:"post", p:"/meetings/:meetingId/sip_dialing", l:"Start SIP dialing"},
+    {m:"get", p:"/meetings/:meetingId/survey", l:"Get survey"},
+    {m:"get", p:"/meetings/:meetingId/jointoken/local_archiving", l:"Get local archiving token"},
+    {m:"get", p:"/meetings/:meetingId/jointoken/live_streaming", l:"Get live streaming token"},
+    {m:"get", p:"/meetings/:meetingId/jointoken/local_recording", l:"Get local recording token"},
+    {m:"get", p:"/meetings/:meetingId/livestream", l:"Get livestream details"},
+    {m:"get", p:"/meetings/:meetingId/invitation", l:"Get invitation"},
+    {m:"get", p:"/meetings/:meetingId/token", l:"Get meeting token"},
+    {m:"get", p:"/past_meetings/:meetingId", l:"Get past meeting"},
+    {m:"get", p:"/past_meetings/:meetingId/participants", l:"Get past meeting participants"},
+    {m:"get", p:"/meetings/meeting_summaries", l:"List meeting summaries"},
+    {m:"get", p:"/meetings/:meetingId/polls", l:"List polls"},
+    {m:"get", p:"/meetings/:meetingId/registrants", l:"List registrants"},
+    {m:"get", p:"/users/:userId/meeting_templates", l:"List meeting templates"},
+    {m:"get", p:"/users/:userId/meetings", l:"List user meetings"},
+    {m:"get", p:"/past_meetings/:meetingId/instances", l:"List past meeting instances"},
+    {m:"get", p:"/past_meetings/:meetingId/polls", l:"List past meeting polls"},
+    {m:"get", p:"/past_meetings/:meetingId/qa", l:"List past meeting Q&A"},
+    {m:"get", p:"/meetings/:meetingId/registrants/questions", l:"List registrant questions"},
+    {m:"get", p:"/users/:userId/upcoming_meetings", l:"List upcoming meetings"},
+    {m:"post", p:"/meetings/:meetingId/batch_polls", l:"Create batch polls"},
+    {m:"post", p:"/meetings/:meetingId/batch_registrants", l:"Add batch registrants"},
+    {m:"patch", p:"/live_meetings/:meetingId/chat/messages/:messageId", l:"Update chat message"},
+    {m:"patch", p:"/meetings/:meetingId/livestream", l:"Update livestream"},
+    {m:"patch", p:"/meetings/:meetingId", l:"Update meeting"},
+    {m:"put", p:"/meetings/:meetingId/polls/:pollId", l:"Update poll"},
+    {m:"patch", p:"/meetings/:meetingId/survey", l:"Update survey"},
+    {m:"patch", p:"/meetings/:meetingId/livestream/status", l:"Update livestream status"},
+    {m:"put", p:"/meetings/:meetingId/status", l:"Update meeting status"},
+    {m:"patch", p:"/live_meetings/:meetingId/rtms_app/status", l:"Update RTMS app status"},
+    {m:"put", p:"/meetings/:meetingId/registrants/status", l:"Update registrant status"},
+    {m:"patch", p:"/meetings/:meetingId/registrants/questions", l:"Update registrant questions"},
+    {m:"patch", p:"/live_meetings/:meetingId/events", l:"Update live meeting events"}
   ];
 
   RED.nodes.registerType('zoom-config', {
@@ -85,6 +85,7 @@
       const $op = $("#node-input-operation");
       $op.empty();
       OPS.forEach(o => { $op.append($('<option/>').val(o.m + ' ' + o.p).text(o.l)); });
+      $op.val(this.operation || 'get /meetings/:meetingId');
 
       // Example request bodies per write operation
       const EXAMPLE_BODIES = {
@@ -197,16 +198,16 @@
 
 <script type="text/x-red" data-template-name="zoom-config">
   <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Optional label">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-config-input-name" placeholder="Optional label">
   </div>
   <div class="form-row">
-    <label for="node-input-baseUrl"><i class="fa fa-chain"></i> Base URL</label>
-    <input type="text" id="node-input-baseUrl" placeholder="Base URL for Zoom API">
+    <label for="node-config-input-baseUrl"><i class="fa fa-chain"></i> Base URL</label>
+    <input type="text" id="node-config-input-baseUrl" placeholder="Base URL for Zoom API" value="https://api.zoom.us/v2">
   </div>
   <div class="form-row">
-    <label for="node-input-apiToken"><i class="fa fa-key"></i> Zoom API Token</label>
-    <input type="password" id="node-input-apiToken" placeholder="Bearer token from Zoom OAuth">
+    <label for="node-config-input-apiToken"><i class="fa fa-key"></i> Zoom API Token</label>
+    <input type="password" id="node-config-input-apiToken" placeholder="Bearer token from Zoom OAuth">
   </div>
 </script>
 
