@@ -4,6 +4,7 @@ Custom Node-RED nodes for Zoom **Meetings API**.
 
 - ✅ Config node to store `API_TOKEN`
 - ✅ One “Zoom Meetings” node with dynamic dropdown for all operations
+- ✅ Friendly operation names in dropdown
 - ✅ Example JSON for POST/PATCH/PUT operations shown directly in the editor
 
 ---
